@@ -21,6 +21,7 @@ public class FizzBuzz extends Thread {
                 wait();
             }
         }
+        notifyAll();
     }
 
     public synchronized void buzz() throws InterruptedException {
@@ -34,6 +35,7 @@ public class FizzBuzz extends Thread {
                 wait();
             }
         }
+        notifyAll();
     }
 
     public synchronized void fizzbuzz() throws InterruptedException {
@@ -47,6 +49,7 @@ public class FizzBuzz extends Thread {
                 wait();
             }
         }
+        notifyAll();
     }
 
     public synchronized void number() throws InterruptedException {
@@ -60,6 +63,7 @@ public class FizzBuzz extends Thread {
                 wait();
             }
         }
+        notifyAll();
     }
 
     public void separate()  {
@@ -68,7 +72,7 @@ public class FizzBuzz extends Thread {
         }
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         FizzBuzz fizzBuzz = new FizzBuzz(startNumber);
 
         Thread A = new Thread(() -> {
@@ -108,5 +112,10 @@ public class FizzBuzz extends Thread {
         B.start();
         C.start();
         D.start();
+
+        A.join();
+        B.join();
+        C.join();
+        D.join();
     }
 }

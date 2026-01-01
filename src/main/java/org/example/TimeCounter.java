@@ -3,7 +3,10 @@ package org.example;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class TimeCounter {
-    public static void main(String[] args) {
+    private static volatile boolean  isRunning = true;
+    private static final int maxTime = 20;
+
+    public static void main(String[] args) throws InterruptedException {
 
         AtomicInteger seconds = new AtomicInteger();
 
@@ -12,10 +15,14 @@ public class TimeCounter {
 
         Thread timeThread = new Thread(() -> {
             try {
-                while (true) {
+                while (isRunning) {
                     Thread.sleep(second);
-                    seconds.getAndIncrement();
-                    System.out.println(seconds);
+                    int current = seconds.incrementAndGet();
+                    System.out.println(current);
+
+                    if (current >= maxTime) {
+                        isRunning = false;
+                    }
                 }
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
@@ -24,9 +31,11 @@ public class TimeCounter {
 
         Thread messageThread = new Thread(() -> {
             try {
-                while (true) {
+                while (isRunning) {
                     Thread.sleep(interval);
-                    System.out.println("Минуло " + (seconds.get() + 1) + " секунд");
+                    if (isRunning) {
+                        System.out.println("Минуло " + (seconds.get() + 1) + " секунд");
+                    }
                 }
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
@@ -35,5 +44,8 @@ public class TimeCounter {
 
         timeThread.start();
         messageThread.start();
+
+        timeThread.join();
+        messageThread.join();
     }
 }
